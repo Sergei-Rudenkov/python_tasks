@@ -29,7 +29,6 @@ class Play(object):
         self.game[x][y] = sign
         self.move_count += 1
         self.finished = self.check_finished()
-        print self.finished
         print self
 
     def check_satisfaction(self, x, y):
