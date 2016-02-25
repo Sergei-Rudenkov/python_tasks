@@ -30,7 +30,6 @@ class Play(object):
         self.game[x][y] = sign
         self.move_count += 1
         self.finished = self.check_finished()
-        print self.finished
         print self
 
     def check_satisfaction(self, x, y):
@@ -64,11 +63,11 @@ def main():
             satisfactory = play.check_satisfaction(x, y)
         play.make_move(sign, int(x), int(y))
     else:
-        if play.finished != '+':
+        if play.finished == '+':
             print "First player has won!"
-        elif play.finished != '0':
+        elif play.finished == '0':
             print "Second player has won!"
-        elif play.finished != '0':
+        elif play.finished == 'Draw':
             print "The result is draw!"
 
 
