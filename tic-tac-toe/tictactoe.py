@@ -10,20 +10,21 @@ class Play(object):
         return "\n".join(map(str, self.game))
 
     def check_finished(self):
+        result = False
         for i in range(2):
             if self.game[i][0] == self.game[i][1] == self.game[i][2] != '-':
                 result = self.game[i][0]
             elif self.game[0][i] == self.game[1][i] == self.game[2][i] != '-':
                 result = self.game[i][0]
-            elif self.game[0][0] == self.game[1][1] == self.game[2][2] != '-':
-                result = self.game[0][0]
-            elif self.game[0][2] == self.game[1][1] == self.game[2][0] != '-':
-                result = self.game[0][2]
-            elif map(str, self.game).__contains__("-"):
-                result = "Draw"
-            else:
-                result = False
-        return result
+        if self.game[0][0] == self.game[1][1] == self.game[2][2] != '-':
+            return self.game[0][0]
+        elif self.game[0][2] == self.game[1][1] == self.game[2][0] != '-':
+            return self.game[0][2]
+        elif map(str, self.game).__contains__("-"):
+            return "Draw"
+        else:
+            return result
+
 
     def make_move(self, sign, x, y):
         self.game[x][y] = sign
