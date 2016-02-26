@@ -27,17 +27,17 @@ wg = week_generator()
 
 
 def main():
-    leap_year = False
     count = 0
     year = 1900
-    while year < 2000:
-        month = mg.next()
+    while year < 2001:
+          leap_year = False
+          month = mg.next()
         if month == 'January':
             year += 1
         if year % 4 == 0 or year % 400 == 0:
             leap_year = True
 
-        for _ in range(months_map.get(month)):
+        for _ in range(months_map[month]):
             last_month_day = wg.next()
         if month == 'February' and leap_year:
             last_month_day = wg.next()
