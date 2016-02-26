@@ -1,10 +1,11 @@
 class Play(object):
-    game = [['-', '-', '-'],
-            ['-', '-', '-'],
-            ['-', '-', '-']]
 
-    move_count = 1
-    finished = False
+    def __init__(self):
+        self.game = [['-', '-', '-'],
+                ['-', '-', '-'],
+                ['-', '-', '-']]
+        self.move_count = 1
+        self.finished = False
 
     def __str__(self):
         return "\n".join(map(str, self.game))
@@ -20,11 +21,10 @@ class Play(object):
             return self.game[0][0]
         elif self.game[0][2] == self.game[1][1] == self.game[2][0] != '-':
             return self.game[0][2]
-        elif map(str, self.game).__contains__("-"):
+        elif not any("-" in row for row in self.game):
             return "Draw"
         else:
             return result
-
 
     def make_move(self, sign, x, y):
         self.game[x][y] = sign
@@ -41,8 +41,15 @@ class Play(object):
             return "Arguments greater then 2 or less then 0 are not allowed, try again"
         if self.game[x][y] != '-':
             return "Field has been already occupied, try again"
-        else:
-            return "Ok"
+        return "Ok"
+
+    def winner(self):
+        if self.finished == '+':
+            return "First player (+) has won!"
+        elif self.finished == '0':
+            return "Second player (0) has won!"
+        elif self.finished == 'Draw':
+            return "The result is draw!"
 
 
 def main():
@@ -57,18 +64,13 @@ def main():
 
         x, y = raw_input("insert x -> "), raw_input("insert y -> ")
         satisfactory = play.check_satisfaction(x, y)
-        while satisfactory is not "Ok":
+        while satisfactory != "Ok":
             print satisfactory
             x, y = raw_input("insert x -> "), raw_input("insert y -> ")
             satisfactory = play.check_satisfaction(x, y)
         play.make_move(sign, int(x), int(y))
     else:
-        if play.finished == '+':
-            print "First player has won!"
-        elif play.finished == '0':
-            print "Second player has won!"
-        elif play.finished == 'Draw':
-            print "The result is draw!"
+        print play.winner()
 
 
 if __name__ == "__main__":
