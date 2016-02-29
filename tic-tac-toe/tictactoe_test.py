@@ -31,15 +31,21 @@ class TestPlay(unittest.TestCase):
 
     def test_check_draw(self):
         play = tictactoe.Play()
-        for i in [0, 1, 2]:
-            for j in [0, 1, 2]:
-                play.make_move("+", i, j)
+        play.make_move("+", 2, 1)
+        play.make_move("+", 0, 2)
+        play.make_move("+", 1, 0)
+        play.make_move("+", 2, 2)
         play.make_move("0", 1, 1)
         play.make_move("0", 0, 0)
         play.make_move("0", 1, 2)
         play.make_move("0", 0, 1)
         play.make_move("0", 2, 0)
         self.assertEqual(play.winner(), "The result is draw!")
+
+    def test_occupied_exception(self):
+        play = tictactoe.Play()
+        play.make_move("+", 2, 1)
+        self.assertRaises(play.make_move("0", 2, 1), Exception)
 
 if __name__ == '__main__':
     unittest.main()

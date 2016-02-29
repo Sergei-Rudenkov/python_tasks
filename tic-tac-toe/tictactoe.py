@@ -1,9 +1,8 @@
 class Play(object):
-
     def __init__(self):
         self.game = [['-', '-', '-'],
-                ['-', '-', '-'],
-                ['-', '-', '-']]
+                     ['-', '-', '-'],
+                     ['-', '-', '-']]
         self.move_count = 1
         self.finished = False
 
@@ -27,6 +26,8 @@ class Play(object):
             return result
 
     def make_move(self, sign, x, y):
+        if self.game[x][y] != '-':
+            raise Exception("Field already occupied")
         self.game[x][y] = sign
         self.move_count += 1
         self.finished = self.check_finished()
