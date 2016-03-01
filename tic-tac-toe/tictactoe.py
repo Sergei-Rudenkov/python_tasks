@@ -27,7 +27,7 @@ class Play(object):
 
     def make_move(self, sign, x, y):
         if self.game[x][y] != '-':
-            raise Exception("Field already occupied")
+            raise ValueError("Field already occupied")
         self.game[x][y] = sign
         self.move_count += 1
         self.finished = self.check_finished()

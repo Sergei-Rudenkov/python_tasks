@@ -3,7 +3,6 @@ import tictactoe
 
 
 class TestPlay(unittest.TestCase):
-
     def test_satisfactory_int(self):
         play = tictactoe.Play()
         self.assertEqual(
@@ -45,7 +44,9 @@ class TestPlay(unittest.TestCase):
     def test_occupied_exception(self):
         play = tictactoe.Play()
         play.make_move("+", 2, 1)
-        self.assertRaises(play.make_move("0", 2, 1), Exception)
+        with self.assertRaises(ValueError):
+            play.make_move("0", 2, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
