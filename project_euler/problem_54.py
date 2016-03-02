@@ -7,26 +7,26 @@ cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
 def evaluate(hand):
-    if 'A' in hand and 'K' in hand and 'Q' in hand and 'J' in hand and 'T' in hand and check_flush(hand):
+    if all(card in hand for card in "AKQJT") and check_flush(hand):
         return 1  # Royal Flush
     elif check_flush(hand) and check_straight(hand) > 0:
         return 2  # Straight Flush
     elif check_card_series(hand, 4):
-        return 4  # Four of a Kind
+        return 3  # Four of a Kind
     elif check_full_house(hand):
-        return 5  # Full House
+        return 4  # Full House
     elif check_flush(hand):
-        return 6  # Flush
+        return 5  # Flush
     elif check_straight(hand):
-        return 7  # Straight
+        return 6  # Straight
     elif check_card_series(hand, 3):
-        return 8  # Three of a Kind
+        return 7  # Three of a Kind
     elif check_2_pairs(hand):
-        return 9  # Two Pairs
+        return 8  # Two Pairs
     elif check_card_series(hand, 2):
-        return 10  # Two of a Kind
+        return 9  # Two of a Kind
     else:
-        return "No combinations"
+        return 10  # No combinations
 
 
 def check_flush(hand):
@@ -38,65 +38,67 @@ def check_flush(hand):
 
 
 def check_straight(hand):
-    iteration = 0
-    while iteration < 9:
+    for iteration in range(9):
         sub_card = cards[iteration: iteration + 5]
-        if sub_card[0] in hand and sub_card[1] in hand and sub_card[2] in hand and sub_card[3] in hand and sub_card[4] in hand:
+        if all(card in hand for card in sub_card[0: 4]):
             return sub_card[4]
-        iteration += 1
-    if 'A' in hand and '2' in hand and '3' in hand and '4' in hand and '5' in hand:
+    if all(card in hand for card in "2345A"):
         return '5'
 
 
 def check_card_series(hand, range):
     for card in cards:
-        look_up = '%s[A-Z]' % card
+        look_up = '%s[CDHS]' % card
         rx = re.compile(look_up)
         if len(rx.findall(hand)) == range:
-            return True
+            return card
     return False
 
 
 def check_full_house(hand):
     pair = False
     triple = False
+    result_set = []
     for card in cards:
-        look_up = '%s[A-Z]' % card
+        look_up = '%s[CDHS]' % card
         rx = re.compile(look_up)
         if len(rx.findall(hand)) == 3:
             triple = card
+            result_set.append(cards.index(triple))
         elif len(rx.findall(hand)) == 2:
             pair = card
+            result_set.append(cards.index(pair))
     if pair and triple:
-        return triple
+        return sorted(result_set, reverse=True)
 
 
 def check_2_pairs(hand):
     first_pair = False
     second_pair = False
+    result_set = []
     for card in cards:
-        look_up = '%s[A-Z]' % card
+        look_up = '%s[CDHS]' % card
         rx = re.compile(look_up)
         if len(rx.findall(hand)) == 2 and not first_pair:
             first_pair = card
+            result_set.append(cards.index(first_pair))
         elif len(rx.findall(hand)) == 2 and first_pair:
             second_pair = card
-    if first_pair and second_pair and cards.index(first_pair) > cards.index(second_pair):
-        return first_pair
-    elif first_pair and second_pair:
-        return second_pair
+            result_set.append(cards.index(second_pair))
+    if first_pair and second_pair:
+        return result_set
 
 
 def sort_by_highest_card_value(hand):
     result_set = []
-    look_up = '(.)[A-Z]'
+    look_up = '(.)[CDHS]'
     rx = re.compile(look_up)
     for n in rx.findall(hand):
-        result_set.append(int(cards.index(n)))
+        result_set.append(cards.index(n))
     return sorted(result_set, reverse=True)
 
 
-print sort_by_highest_card_value('3C 4H 3H 4C 3D')
+#print sort_by_highest_card_value('3C 4H 3H 4C 3D')
 
 
 # High Card: Highest value card.
