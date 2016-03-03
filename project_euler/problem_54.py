@@ -48,13 +48,7 @@ def check_flush(hand):
     regexp = "^\w%s(?: \w%s){4}$"
     for color in colors:
         if re.search(regexp % (color, color), str(hand)):
-            look_up = '(.)[CDHS]'
-            rx = re.compile(look_up)
-            max_card = 0
-            for n in rx.findall(hand):
-                if cards.index(n) > max_card:
-                    max_card = cards.index(n)
-            return max_card
+            return True
     return False
 
 
