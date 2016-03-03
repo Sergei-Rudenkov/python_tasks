@@ -1,39 +1,60 @@
 import re
 
-# file = open('resource/poker.txt', 'r')
+# https://projecteuler.net/problem=54
+
 
 colors = ['C', 'D', 'S', 'H']
 cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
 def evaluate(hand):
+    result_map = {}
     if all(card in hand for card in "AKQJT") and check_flush(hand):
         return 1  # Royal Flush
-    elif check_flush(hand) and check_straight(hand) > 0:
-        return 2  # Straight Flush
+    elif check_flush(hand) and check_straight(hand):
+        result_map.update({'combination': 2, 'additional indicator': check_straight(hand)})
+        return result_map  # Straight Flush
     elif check_card_series(hand, 4):
-        return 3  # Four of a Kind
+        result_map.update(
+            {'combination': 3, 'additional indicator': [check_card_series(hand, 4)] + sort_by_highest_card_value(hand)})
+        return result_map  # Four of a Kind
     elif check_full_house(hand):
-        return 4  # Full House
+        result_map.update({'combination': 4, 'additional indicator': check_full_house(hand)})
+        return result_map  # Full House
     elif check_flush(hand):
-        return 5  # Flush
+        result_map.update({'combination': 5, 'additional indicator': sort_by_highest_card_value(hand)})
+        return result_map  # Flush
     elif check_straight(hand):
-        return 6  # Straight
+        result_map.update({'combination': 6, 'additional indicator': check_straight(hand)})
+        return result_map  # Straight
     elif check_card_series(hand, 3):
-        return 7  # Three of a Kind
+        result_map.update(
+            {'combination': 7, 'additional indicator': [check_card_series(hand, 3)] + sort_by_highest_card_value(hand)})
+        return result_map  # Three of a Kind
     elif check_2_pairs(hand):
-        return 8  # Two Pairs
+        result_map.update(
+            {'combination': 8, 'additional indicator': check_2_pairs(hand) + sort_by_highest_card_value(hand)})
+        return result_map  # Two Pairs
     elif check_card_series(hand, 2):
-        return 9  # Two of a Kind
+        result_map.update(
+            {'combination': 9, 'additional indicator': [check_card_series(hand, 2)] + sort_by_highest_card_value(hand)})
+        return result_map  # Two of a Kind
     else:
-        return 10  # No combinations
+        result_map.update({'combination': 10, 'additional indicator': sort_by_highest_card_value(hand)})
+        return result_map  # No combinations
 
 
 def check_flush(hand):
     regexp = "^\w%s(?: \w%s){4}$"
     for color in colors:
         if re.search(regexp % (color, color), str(hand)):
-            return True
+            look_up = '(.)[CDHS]'
+            rx = re.compile(look_up)
+            max_card = 0
+            for n in rx.findall(hand):
+                if cards.index(n) > max_card:
+                    max_card = cards.index(n)
+            return max_card
     return False
 
 
@@ -41,9 +62,9 @@ def check_straight(hand):
     for iteration in range(9):
         sub_card = cards[iteration: iteration + 5]
         if all(card in hand for card in sub_card[0: 4]):
-            return sub_card[4]
+            return cards.index(sub_card[4])
     if all(card in hand for card in "2345A"):
-        return '5'
+        return cards.index('5')
 
 
 def check_card_series(hand, range):
@@ -51,7 +72,7 @@ def check_card_series(hand, range):
         look_up = '%s[CDHS]' % card
         rx = re.compile(look_up)
         if len(rx.findall(hand)) == range:
-            return card
+            return cards.index(card)
     return False
 
 
@@ -69,7 +90,7 @@ def check_full_house(hand):
             pair = card
             result_set.append(cards.index(pair))
     if pair and triple:
-        return sorted(result_set, reverse=True)
+        return result_set
 
 
 def check_2_pairs(hand):
@@ -86,7 +107,7 @@ def check_2_pairs(hand):
             second_pair = card
             result_set.append(cards.index(second_pair))
     if first_pair and second_pair:
-        return result_set
+        return sorted(result_set, reverse=True)
 
 
 def sort_by_highest_card_value(hand):
@@ -98,7 +119,34 @@ def sort_by_highest_card_value(hand):
     return sorted(result_set, reverse=True)
 
 
-#print sort_by_highest_card_value('3C 4H 3H 4C 3D')
+def compare_hands(first_hand, second_hand):
+    first_hand = evaluate(first_hand)
+    second_hand = evaluate(second_hand)
+    if first_hand['combination'] < second_hand['combination']:
+        return 1  # first hand win
+    elif first_hand['combination'] > second_hand['combination']:
+        return -1  # second hand win
+    elif first_hand['combination'] == second_hand['combination']:
+        if first_hand['additional indicator'] > second_hand['additional indicator']:
+            return 1  # first hand win
+        elif first_hand['additional indicator'] < second_hand['additional indicator']:
+            return -1  # second hand win
+        else:
+            return 0  # draw
+
+
+def main():
+    count_first_win = 0
+    file = open('resource/poker.txt', 'r')
+    for line in file:
+        first_hand, second_hand = line[:len(line) / 2], line[len(line) / 2:]
+        if compare_hands(first_hand, second_hand) == 1:
+            count_first_win += 1
+    print "First hand won %s times" % count_first_win
+
+
+if __name__ == '__main__':
+    main()
 
 
 # High Card: Highest value card.
@@ -112,5 +160,3 @@ def sort_by_highest_card_value(hand):
 # Straight Flush: All cards are consecutive values of same suit.
 # Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
 
-# line = file.next()
-# first_hand, second_hand = line[:len(line) / 2], line[len(line) / 2:]
