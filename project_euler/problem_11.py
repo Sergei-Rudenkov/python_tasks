@@ -82,7 +82,6 @@ def main():
     multiplication_products = []
     for i in range(20):
         for j in range(20):
-            pivot = grid[i][j]
             multiplication_products.append(get_right_seq_multiplication(i, j))
             multiplication_products.append(get_right_bottom_diagonal_seq_multiplication(i, j))
             multiplication_products.append(get_bottom_seq_multiplication(i, j))
@@ -96,4 +95,4 @@ def main():
 
 
 if __name__ == '__main__':
-        main()
+    main()
