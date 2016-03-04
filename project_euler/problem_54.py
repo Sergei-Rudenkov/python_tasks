@@ -14,7 +14,7 @@ def evaluate(hand):
     elif check_flush(hand) and check_straight(hand):
         result_map.update({'combination': 2, 'additional indicator': check_straight(hand)})
         return result_map  # Straight Flush
-    elif check_card_series(hand, 4):
+    elif check_card_series(hand, 4) >= 0:
         result_map.update(
             {'combination': 3, 'additional indicator': [check_card_series(hand, 4)] + sort_by_highest_card_value(hand)})
         return result_map  # Four of a Kind
@@ -27,7 +27,7 @@ def evaluate(hand):
     elif check_straight(hand):
         result_map.update({'combination': 6, 'additional indicator': check_straight(hand)})
         return result_map  # Straight
-    elif check_card_series(hand, 3):
+    elif check_card_series(hand, 3) >= 0:
         result_map.update(
             {'combination': 7, 'additional indicator': [check_card_series(hand, 3)] + sort_by_highest_card_value(hand)})
         return result_map  # Three of a Kind
@@ -35,7 +35,7 @@ def evaluate(hand):
         result_map.update(
             {'combination': 8, 'additional indicator': check_2_pairs(hand) + sort_by_highest_card_value(hand)})
         return result_map  # Two Pairs
-    elif check_card_series(hand, 2):
+    elif check_card_series(hand, 2) >= 0:
         result_map.update(
             {'combination': 9, 'additional indicator': [check_card_series(hand, 2)] + sort_by_highest_card_value(hand)})
         return result_map  # Two of a Kind
@@ -45,7 +45,7 @@ def evaluate(hand):
 
 
 def check_flush(hand):
-    regexp = "^\w%s(?: \w%s){4}$"
+    regexp = r"^\w%s(?: \w%s){4}$"
     for color in colors:
         if re.search(regexp % (color, color), str(hand)):
             return True
@@ -55,19 +55,18 @@ def check_flush(hand):
 def check_straight(hand):
     for iteration in range(9):
         sub_card = cards[iteration: iteration + 5]
-        if all(card in hand for card in sub_card[0: 4]):
+        if all(card in hand for card in sub_card):
             return cards.index(sub_card[4])
     if all(card in hand for card in "2345A"):
         return cards.index('5')
 
 
-def check_card_series(hand, range):
+def check_card_series(hand, quantity):
     for card in cards:
         look_up = '%s[CDHS]' % card
         rx = re.compile(look_up)
-        if len(rx.findall(hand)) == range:
+        if len(rx.findall(hand)) == quantity:
             return cards.index(card)
-    return False
 
 
 def check_full_house(hand):
@@ -120,7 +119,7 @@ def compare_hands(first_hand, second_hand):
         return 1  # first hand win
     elif first_hand['combination'] > second_hand['combination']:
         return -1  # second hand win
-    elif first_hand['combination'] == second_hand['combination']:
+    else:
         if first_hand['additional indicator'] > second_hand['additional indicator']:
             return 1  # first hand win
         elif first_hand['additional indicator'] < second_hand['additional indicator']:
@@ -131,9 +130,9 @@ def compare_hands(first_hand, second_hand):
 
 def main():
     count_first_win = 0
-    file = open('resource/poker.txt', 'r')
-    for line in file:
-        first_hand, second_hand = line[:len(line) / 2], line[len(line) / 2:]
+    file_source = open('resource/poker.txt', 'r')
+    for line in file_source:
+        first_hand, second_hand = line[:len(line) / 2].strip(), line[len(line) / 2:].strip()
         if compare_hands(first_hand, second_hand) == 1:
             count_first_win += 1
     print "First hand won %s times" % count_first_win
