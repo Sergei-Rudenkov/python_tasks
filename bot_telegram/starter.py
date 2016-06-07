@@ -1,6 +1,7 @@
-from bot_telegram.telezombie import api
 from tornado import gen, httpclient, ioloop
 import json
+from bot_telegram.telezombie import api
+
 
 class KelThuzad(api.TeleLich):
 
