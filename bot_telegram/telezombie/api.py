@@ -31,7 +31,6 @@ class TeleZombie(object):
                 'url': url
             }
 
-        # TODO undocumented return type
         data = yield self._get('setWebhook', args)
         return None
 
@@ -141,9 +140,7 @@ class TeleLich(_DispatcherMixin):
 
     @gen.coroutine
     def poll(self, timeout=1):
-        # remove previous webhook first
         yield self._api.set_webhook()
-        # forever
         while True:
             try:
                 updates = yield self.get_updates(timeout)
@@ -159,7 +156,6 @@ class TeleLich(_DispatcherMixin):
 
     @gen.coroutine
     def close(self):
-        # remove webhook
         yield self._api.set_webhook()
 
 
