@@ -1,24 +1,24 @@
 import unittest
-import mock as mock
-import sys
+
+from mock import mock
 
 import bot_telegram.starter
 from bot_telegram.telezombie import types
 
 
 class TestHelloApp(unittest.TestCase):
-    @mock.patch.object(sys.modules['bot_telegram.telezombie'], 'KelThuzad')
-    def test_app(self, mock_zombie):
-        chat = types.Chat
-        chat.id_ = 100
-        message = types.Message({'message_id': '1', 'text': 'Ў', 'chat': chat})
+    def test_app(self):
+        message = types.Message({'message_id': '1', 'text': 'Ў',
+                                 'chat': {"id": 227071993, "first_name": "Sergei", "last_name": "Rudenkov",
+                                          "type": "private"}, 'from': 343})
 
         zombie = bot_telegram.starter.KelThuzad('API_TOKEN', 'SO_WS_URL')
         zombie.on_text(message)
-
-        mock_zombie.send_message.assert_called_with(100,
-                                             "Sorry, I didn't find anything according to you request. Try again!",
-                                                    1)
+        with mock.patch.object(bot_telegram.starter.KelThuzad, 'send_message') as mock_zombie:
+            mock_zombie.assert_called_with(227071993,
+                                           """Sorry, I didn't find anything according to you request.
+                                           Try again!""",
+                                           1)
 
 
 if __name__ == '__main__':
