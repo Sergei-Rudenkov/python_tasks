@@ -11,11 +11,12 @@ class StackOverflowHandler(tornado.web.RequestHandler):
         returns json: link to the most ranked question, lookup string
         """
         url = httputil.url_concat("https://api.stackexchange.com/2.2/search?order=desc",
-                                          [("sort", "votes"),
-                                           ("intitle", look_up_pattern),
-                                           ("site", "stackoverflow"),
-                                           ("page", "1"),
-                                           ("pagesize", "1")])
+                                  [("sort", "votes"),
+                                   ("intitle", look_up_pattern),
+                                   ("site", "stackoverflow"),
+                                   ("page", "1"),
+                                   ("pagesize", "1"),
+                                   ("key", "NvDdGOOtnc3bwruZvtmBmQ((")])
         response = yield self.fetch_so(url)
         data = json.loads(response)
         data = [n['link'] for n in data['items']]

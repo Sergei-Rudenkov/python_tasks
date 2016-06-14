@@ -3,6 +3,9 @@ import json
 
 from bot_telegram.telezombie import api
 
+API_TOKEN = '231573402:AAH9Dwo7QONselTFxeLIAbN1ElvYPjNi1CE'
+SO_WS_URL = 'http://localhost:8888/search/'
+
 
 class KelThuzad(api.TeleLich):
     def __init__(self, api_token, ws_url):
@@ -18,13 +21,13 @@ class KelThuzad(api.TeleLich):
         chat = message.chat
         text = message.text.strip().replace(" ", "-").replace("[()&?]", "")
         if not self.is_ascii(text):
-            yield self.send_message(chat.id_, "Sorry, I didn't find anything according to you request. Try again!",
-                                    reply_to_message_id=id_)
+            return self.send_message(chat.id_, "Sorry, I didn't find anything according to you request. Try again!",
+                                     reply_to_message_id=id_)
         else:
-            yield self.perform_search(text, id_, chat)
+            return self.perform_search(text, id_, chat)
 
     @gen.coroutine
-    def perform_search(self, text, id, chat):
+    def perform_search(self, text, message_id, chat):
         """
         Text handler fetch data from webserver
         """
@@ -34,7 +37,7 @@ class KelThuzad(api.TeleLich):
             bot_response = bot_response['links'][0]
         else:
             bot_response = "Sorry, I didn't find anything according to you request. Try again!"
-        yield self.send_message(chat.id_, bot_response, reply_to_message_id=id)
+        yield self.send_message(chat.id_, bot_response, reply_to_message_id=message_id)
 
     @gen.coroutine
     def ws_get(self, url):
@@ -57,14 +60,14 @@ class KelThuzad(api.TeleLich):
 
 @gen.coroutine
 def forever():
-    API_TOKEN = '231573402:AAH9Dwo7QONselTFxeLIAbN1ElvYPjNi1CE'
-    SO_WS_URL = 'http://localhost:8888/search/'
     lich = KelThuzad(API_TOKEN, SO_WS_URL)
     yield lich.poll()
+
 
 def main():
     main_loop = ioloop.IOLoop.instance()
     main_loop.run_sync(forever)
+
 
 if __name__ == "__main__":
     main()
